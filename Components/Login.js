@@ -1,42 +1,81 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import React from 'react';
+import { useState } from "react";
+import { Formik } from 'formik';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-export default function Login({navigation}) {
+const Login = ({ navigation }) => {
   const [isSecure, setIsSecure] = useState(true);
+  const handleSubmit = (values) => {
+    console.log(values);
+    navigation.navigate('Home');
+  };
   return (
     <View style={styles.mainContainer}>
       <Text style={styles.mainHeader}>Login Screen</Text>
       <Text style={styles.description}>Login</Text>
-      <View style={styles.inputContainer}>
-        <Text style={styles.labels}>Enter your enrollment number</Text>
-        {/* Add keyboardType='numeric' or not?? maxLength={10} or not??*/}
-        <TextInput style={styles.inputStyle} keyboardType='default' autoCorrect={false}></TextInput>
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.labels}>Enter your password</Text>
-        {/* Add keyboardType='numeric' or not?? maxLength={10} or not??*/}
-        <TextInput
-          style={styles.inputStyle}
-          autoCorrect={false}
-          secureTextEntry={isSecure}>
-        </TextInput>
-        <TouchableOpacity style={styles.btnEye} onPress={() => {
-            setIsSecure(!isSecure)
-          }}>
-            <MaterialCommunityIcons name={isSecure==false?'eye-outline':'eye-off-outline'} size={20} color={'rgba(255,255,255,0.7'}></MaterialCommunityIcons>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.buttonStyle}
-          onPress={()=>{navigation.navigate('Home')}}
-        >
-          <Text style={{ color: "#fff" }}>Login</Text>
-        </TouchableOpacity>
-      </View>
+      <Formik
+        initialValues={{ enrollmentNumber: '', password: '' }}
+        onSubmit={handleSubmit}
+      >
+        {({ handleChange, handleBlur, handleSubmit, values }) => (
+          <>
+            <View style={styles.inputContainer}>
+              <Text style={styles.labels}>Enter your enrollment number</Text>
+              <TextInput
+                style={styles.inputStyle}
+                onChangeText={handleChange('enrollmentNumber')}
+                onBlur={handleBlur('enrollmentNumber')}
+                value={values.enrollmentNumber}
+                keyboardType="default"
+                autoCorrect={false}
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.labels}>Enter your password</Text>
+              <TextInput
+                style={styles.inputStyle}
+                onChangeText={handleChange('password')}
+                onBlur={handleBlur('password')}
+                value={values.password}
+                autoCorrect={false}
+                secureTextEntry
+              />
+              <TouchableOpacity
+                style={styles.btnEye}
+                onPress={() => {
+                  setIsSecure(!isSecure);
+                }}
+              >
+                <MaterialCommunityIcons
+                  name={
+                    isSecure == false
+                      ? 'eye-outline'
+                      : 'eye-off-outline'
+                  }
+                  size={20}
+                  color={'rgba(255,255,255,0.7'}
+                ></MaterialCommunityIcons>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              style={styles.buttonStyle}
+              onPress={handleSubmit}
+            >
+              <Text style={{ color: '#fff' }}>Login</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </Formik>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -114,9 +153,11 @@ const styles = StyleSheet.create({
     alignContent: "center",
     fontWeight: "600",
   },
-  btnEye:{
-    position:'absolute',
-    right:15,
-    top:49,
+  btnEye: {
+    position: 'absolute',
+    right: 15,
+    top: 49,
   }
 });
+
+export default Login;
