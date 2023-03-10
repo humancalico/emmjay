@@ -48,7 +48,7 @@ const Login = ({ navigation }) => {
                 onBlur={handleBlur('password')}
                 value={values.password}
                 autoCorrect={false}
-                secureTextEntry
+                secureTextEntry={isSecure}
               />
               <TouchableOpacity
                 style={styles.btnEye}
