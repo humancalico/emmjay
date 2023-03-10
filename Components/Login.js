@@ -9,13 +9,16 @@ import {
   StyleSheet,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Login = ({ navigation }) => {
   const [isSecure, setIsSecure] = useState(true);
-  const handleSubmit = (values) => {
-    console.log(values);
+  const queryClient = useQueryClient();
+
+  const handleSubmit = (data) => {
+    console.log("submit button clicked with data: ", data);
     navigation.navigate('Home');
-  };
+  }
   return (
     <View style={styles.mainContainer}>
       <Text style={styles.mainHeader}>Login Screen</Text>
