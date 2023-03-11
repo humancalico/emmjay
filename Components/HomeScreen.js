@@ -9,23 +9,34 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
 const Tab = createMaterialBottomTabNavigator();
 
 export default function HomeScreen({ navigation }) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#ffff" }}>
-      <ScrollView style={{ padding: 35 }}>
-        <View style={{ flexDirection: "row", marginBottom: 20, justifyContent: "space-between" }}>
-          <Text style={{ fontSize: 18, fontFamily: "Roboto-Medium" }}>Hello Fellow</Text>
+      <ScrollView style={{ paddingTop: 45 }}>
+        <View style={{ justifyContent: "space-evenly" }}>
+          <TouchableOpacity onPress={() => alert("Working")}>
+            <MaterialCommunityIcons
+              name="dots-vertical"
+              size={30}
+              style={{ marginLeft: 8 }}
+            ></MaterialCommunityIcons>
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <ImageBackground
-              source={require("../assets/images/profile.jpg")}
-              style={{ width: 35, height: 35 }}
-              imageStyle={{ borderRadius: 25 }}
-            />
+            <MaterialCommunityIcons
+              name="account"
+              size={40}
+              style={{ alignSelf: "flex-end", marginTop: -30, marginRight: 5 }}
+            ></MaterialCommunityIcons>
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <View style={{ flex: 1, alignItems: "center" }}>
+        <Text>What else to add???</Text>
+      </View>
     </SafeAreaView>
   );
 }

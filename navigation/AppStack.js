@@ -11,7 +11,7 @@ const Tab = createMaterialBottomTabNavigator();
 export default function AppStack() {
   return (
     <Tab.Navigator labeled={true} barStyle={{ backgroundColor: "white" }} activeColor="black" initialRouteName="Home" >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarIcon: "home" }} ></Tab.Screen>
+      <Tab.Screen name="Home1" component={HomeScreen} options={{ tabBarIcon: "home" }} ></Tab.Screen>
       <Tab.Screen name="Attendance" component={Attendance} options={{ tabBarIcon: "home" }} ></Tab.Screen>
       <Tab.Screen name="Social" component={Search} options={{ tabBarIcon: "magnify" }} ></Tab.Screen>
       {/* <Tab.Screen name="Mess" component={Notification} options={{tabBarIcon:'camera'}} ></Tab.Screen> */}
