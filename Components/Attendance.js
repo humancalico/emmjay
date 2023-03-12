@@ -2,7 +2,6 @@ import React from 'react'
 import Card from './Card'
 import { StatusBar } from "expo-status-bar";
 import { Button, StyleSheet, Text, View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
 import { FlatList } from 'react-native';
 
 const cardsData = [
@@ -32,14 +31,9 @@ export default function Attendance({ navigation }) {
     <View style={styles.container}>
       {/* <Button title="Visit Again" onPress={()=>navigation.navigate('Attendance')}>
       </Button> */}
-      <ScrollView contentContainerStyle={{
-        //   alignItems: "center",
-        //   justifyContent: "center"
-      }}>
         <AttendanceListComponent />
         {/* <Login /> */}
         <StatusBar style="auto" />
-      </ScrollView>
     </View>
   )
 }
