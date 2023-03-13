@@ -9,16 +9,41 @@ import {
   StyleSheet,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 const Login = ({ navigation }) => {
   const [isSecure, setIsSecure] = useState(true);
-  const queryClient = useQueryClient();
 
-  const handleSubmit = (data) => {
-    console.log("submit button clicked with data: ", data);
+  const mutation = useMutation(async (loginRequest) => {
+    console.log(loginRequest);
+    const response = await fetch('https://webportal.jiit.ac.in:6011/StudentPortalAPI/token/generate-token1', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(loginRequest),
+    });
+
+    console.log(await response.json())
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    return response.json();
+  })
+
+  const handleSubmit = (loginFormData) => {
+    const loginRequest = {
+      otppwd: "PWD",
+      username: loginFormData.enrollmentNumber,
+      passwordotpvalue: loginFormData.password,
+      Modulename: "STUDENTMODULE",
+    }
+    mutation.mutate(loginRequest);
+    // TODO: navigate only on success
     navigation.navigate('Home');
   }
+
   return (
     <View style={styles.mainContainer}>
       <Text style={styles.mainHeader}>Login Screen</Text>

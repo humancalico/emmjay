@@ -1,22 +1,46 @@
 import React from 'react'
 import Card from './Card'
 import { StatusBar } from "expo-status-bar";
-import { Button, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { FlatList } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
 
-const cardsData = [
-  { id: '1', heading: 'Mathematics', ratio: '7/10', status: 'Attend all the classes it is very necessary otherwise you will faildsfjklasdf;ja;' },
-  { id: '2', heading: 'Science', ratio: '5/10', status: 'Attend all the classes it is very necessary otherwise you will faildsfjklasdf;ja;' },
-  { id: '3', heading: 'History', ratio: '8/10', status: 'Attend all the classes it is very necessary otherwise you will faildsfjklasdf;ja;' },
-  { id: '4', heading: 'English', ratio: '4/10', status: 'Attend all the classes it is very necessary otherwise you will faildsfjklasdf;ja;' },
-  { id: '5', heading: 'Art', ratio: '6/10', status: 'Attend all the classes it is very necessary otherwise you will faildsfjklasdf;ja;' },
-];
+const fetchAttendanceDetail = async (attendanceDetailRequest) => {
+  const response = await fetch('https://webportal.jiit.ac.in:6011/StudentPortalAPI/StudentClassAttendance/getstudentattendancedetail', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer <TOKEN>',
+    },
+    body: JSON.stringify(attendanceDetailRequest)
+  });
+  return response.json();
+};
 
 const renderItem = ({ item }) => (
   <Card Heading={item.heading} Ratio={item.ratio} Status={item.status} />
 );
 
 const AttendanceListComponent = () => {
+  const attendanceDetailRequest = {
+    "clientid": "JAYPEE",
+    "instituteid": "11IN1902J000003",
+    "studentid": "J1281900629",
+    "stynumber": "8",
+    "registrationid": "NDRUM22110000001"
+  };
+  const { data } = useQuery(['attendanceKey'], () => fetchAttendanceDetail(attendanceDetailRequest), {
+    suspense: true,
+    onSuccess: (data) => console.log(data),
+  });
+  const cardsData = data?.response?.studentattendancelist?.map((item, index) => ({
+    id: `${index + 1}`,
+    heading: item.subjectcode,
+    ratio: `${item.Ltotalpres}/${item.Ltotalclass}`,
+    status: 'Attend all the classes it is very necessary otherwise you will fail'
+  })) ?? [];
+  console.log(cardsData);
+
   return (
     <FlatList
       data={cardsData}
@@ -26,14 +50,15 @@ const AttendanceListComponent = () => {
   )
 }
 
+
 export default function Attendance({ navigation }) {
   return (
     <View style={styles.container}>
       {/* <Button title="Visit Again" onPress={()=>navigation.navigate('Attendance')}>
       </Button> */}
-        <AttendanceListComponent />
-        {/* <Login /> */}
-        <StatusBar style="auto" />
+      <AttendanceListComponent />
+      {/* <Login /> */}
+      <StatusBar style="auto" />
     </View>
   )
 }
