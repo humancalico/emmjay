@@ -4,13 +4,14 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
 import { FlatList } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
+import { AppContext } from '../AppContext';
 
-const fetchAttendanceDetail = async (attendanceDetailRequest) => {
+const fetchAttendanceDetail = async (attendanceDetailRequest, bearerToken) => {
   const response = await fetch('https://webportal.jiit.ac.in:6011/StudentPortalAPI/StudentClassAttendance/getstudentattendancedetail', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer <TOKEN>',
+      'Authorization': `Bearer ${bearerToken}`,
     },
     body: JSON.stringify(attendanceDetailRequest)
   });
@@ -22,14 +23,19 @@ const renderItem = ({ item }) => (
 );
 
 const AttendanceListComponent = () => {
+  const { studentDetail } = React.useContext(AppContext);
+  console.log(studentDetail);
+
   const attendanceDetailRequest = {
     "clientid": "JAYPEE",
-    "instituteid": "11IN1902J000003",
-    "studentid": "J1281900629",
+    "instituteid": studentDetail.response.regdata.institutelist[0].value,
+    "studentid": studentDetail.response.regdata.memberid,
     "stynumber": "8",
     "registrationid": "NDRUM22110000001"
   };
-  const { data } = useQuery(['attendanceKey'], () => fetchAttendanceDetail(attendanceDetailRequest), {
+
+  const bearerToken = studentDetail.response.regdata.token;
+  const { data } = useQuery(['attendanceKey'], () => fetchAttendanceDetail(attendanceDetailRequest, bearerToken), {
     suspense: true,
     onSuccess: (data) => console.log(data),
   });

@@ -10,9 +10,11 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useMutation } from '@tanstack/react-query';
+import { AppContext } from '../AppContext';
 
 const Login = ({ navigation }) => {
   const [isSecure, setIsSecure] = useState(true);
+  const { setStudentDetail } = React.useContext(AppContext);
 
   const mutation = useMutation(async (loginRequest) => {
     console.log(loginRequest);
@@ -24,11 +26,13 @@ const Login = ({ navigation }) => {
       body: JSON.stringify(loginRequest),
     });
 
-    console.log(await response.json())
+    const data = await response.json();
+    console.log(data);
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
 
+    setStudentDetail(data);
     return response.json();
   })
 
