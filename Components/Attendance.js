@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Card from './Card'
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
 import { FlatList } from 'react-native';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AppContext } from '../AppContext';
-import DropDown from './DropDown';
+import DropdownComponent from './Dropdown';
 
 const fetchAttendanceDetail = async (attendanceDetailRequest, bearerToken) => {
   const response = await fetch('https://webportal.jiit.ac.in:6011/StudentPortalAPI/StudentClassAttendance/getstudentattendancedetail', {
@@ -19,26 +19,75 @@ const fetchAttendanceDetail = async (attendanceDetailRequest, bearerToken) => {
   return response.json();
 };
 
+const AttendanceDropdown = ({ setRegistrationId }) => {
+  const { studentDetail } = React.useContext(AppContext);
+  const queryClient = useQueryClient();
+
+  console.log('log in dropdown line 36', studentDetail);
+
+  const studentRegistrationInfoForAttendanceRequest = {
+    "clientid": "JAYPEE",
+    "instituteid": studentDetail?.response?.regdata?.institutelist[0].value,
+    "studentid": studentDetail?.response?.regdata.memberid,
+    "membertype": "S"
+  };
+  const bearerToken = studentDetail.response.regdata.token;
+  const { data } = useQuery(['studentRegistrationInfoForAttendanceKey'], () => fetchStudentRegistrationInfoForAttendance(studentRegistrationInfoForAttendanceRequest, bearerToken), {
+    suspense: true,
+    onSuccess: (data) => console.log(data),
+  });
+
+  console.log(data);
+
+  const semList = data?.response?.semlist;
+  console.log(semList);
+  const listData = semList.map(registration => ({ label: registration.registrationcode, value: registration.registrationid }))
+
+  return (
+    <DropdownComponent listData={listData} onSelect={
+      (newRegistrationId) => {
+        console.log("registration id line 47", newRegistrationId);
+        setRegistrationId(newRegistrationId);
+        queryClient.invalidateQueries(['attendanceDetail', newRegistrationId]);
+      }
+    } />
+  )
+};
+
+const fetchStudentRegistrationInfoForAttendance = async (studentRegistrationInfoForAttendanceRequest, bearerToken) => {
+  const response = await fetch('https://webportal.jiit.ac.in:6011/StudentPortalAPI/StudentClassAttendance/getstudentInforegistrationforattendence', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${bearerToken}`,
+    },
+    body: JSON.stringify(studentRegistrationInfoForAttendanceRequest)
+  });
+  return response.json();
+};
+
 const renderItem = ({ item }) => (
   <Card Heading={item.heading} Ratio={item.ratio} Status={item.status} />
 );
 
 const AttendanceListComponent = () => {
   const { studentDetail } = React.useContext(AppContext);
+  const [registrationId, setRegistrationId] = useState("NDRUM22110000001");
   console.log(studentDetail);
 
   const attendanceDetailRequest = {
     "clientid": "JAYPEE",
-    "instituteid": studentDetail.response.regdata.institutelist[0].value,
-    "studentid": studentDetail.response.regdata.memberid,
+    "instituteid": studentDetail?.response?.regdata?.institutelist[0].value,
+    "studentid": studentDetail?.response?.regdata.memberid,
     "stynumber": "8",
-    "registrationid": "NDRUM22110000001"
+    "registrationid": registrationId
   };
 
   const bearerToken = studentDetail.response.regdata.token;
-  const { data } = useQuery(['attendanceKey'], () => fetchAttendanceDetail(attendanceDetailRequest, bearerToken), {
-    suspense: true,
-    onSuccess: (data) => console.log(data),
+  const attendanceDetailQueryKey = ['attendanceDetail', registrationId]
+
+  const { data } = useQuery(attendanceDetailQueryKey, () => fetchAttendanceDetail(attendanceDetailRequest, bearerToken), {
+    enabled: !!registrationId, // Enable the query only when a registration ID is selected
   });
   const cardsData = data?.response?.studentattendancelist?.map((item, index) => ({
     id: `${index + 1}`,
@@ -49,11 +98,14 @@ const AttendanceListComponent = () => {
   console.log(cardsData);
 
   return (
-    <FlatList
-      data={cardsData}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id}
-    />
+    <View>
+      <AttendanceDropdown setRegistrationId={setRegistrationId} />
+      <FlatList
+        data={cardsData}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      />
+    </View>
   )
 }
 
@@ -63,9 +115,9 @@ export default function Attendance({ navigation }) {
     <View style={styles.container}>
       {/* <Button title="Visit Again" onPress={()=>navigation.navigate('Attendance')}>
       </Button> */}
-      {/* <AttendanceListComponent /> */}
+      <AttendanceListComponent />
       {/* <Login /> */}
-      <DropDown />
+      {/* <DropDown /> */}
       <StatusBar style="auto" />
     </View>
   )
