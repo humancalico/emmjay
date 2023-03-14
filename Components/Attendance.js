@@ -5,6 +5,7 @@ import { StyleSheet, View } from "react-native";
 import { FlatList } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { AppContext } from '../AppContext';
+import DropDown from './DropDown';
 
 const fetchAttendanceDetail = async (attendanceDetailRequest, bearerToken) => {
   const response = await fetch('https://webportal.jiit.ac.in:6011/StudentPortalAPI/StudentClassAttendance/getstudentattendancedetail', {
@@ -62,8 +63,9 @@ export default function Attendance({ navigation }) {
     <View style={styles.container}>
       {/* <Button title="Visit Again" onPress={()=>navigation.navigate('Attendance')}>
       </Button> */}
-      <AttendanceListComponent />
+      {/* <AttendanceListComponent /> */}
       {/* <Login /> */}
+      <DropDown />
       <StatusBar style="auto" />
     </View>
   )
