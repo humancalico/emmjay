@@ -67,7 +67,7 @@ const fetchStudentRegistrationInfoForAttendance = async (studentRegistrationInfo
 };
 
 const renderItem = ({ item }) => (
-  <Card Heading={item.heading} Ratio={item.ratio} Status={item.status} />
+  <Card Heading={item.heading} Ratio={item.percentage} Status={item.status} />
 );
 
 const AttendanceListComponent = () => {
@@ -92,6 +92,7 @@ const AttendanceListComponent = () => {
   const cardsData = data?.response?.studentattendancelist?.map((item, index) => ({
     id: `${index + 1}`,
     heading: item.subjectcode,
+    percentage: item.Lpercentage,
     ratio: `${item.Ltotalpres}/${item.Ltotalclass}`,
     status: 'Attend all the classes it is very necessary otherwise you will fail'
   })) ?? [];

@@ -8,7 +8,7 @@ export default function Card({Heading,Ratio,Status}){
                 <Text>{Heading}</Text>
             </View>
             <View style={styles.progressBar}>
-            <CircularProgress value={60} radius={20} duration={1000} progressValueColor={'#000'} maxValue={100} titleColor={'black'} titleStyle={{fontWeight:'bold'}} inActiveStrokeColor={'#2ecc71'} inActiveStrokeOpacity={0.2}></CircularProgress>
+            <CircularProgress value={Ratio} radius={20} duration={1000} progressValueColor={Ratio>60?'#2ecc71':'#ff0000'} maxValue={100} titleColor={'black'} titleStyle={{fontWeight:'bold'}} inActiveStrokeColor={Ratio>60?'#2ecc71':'#ff0000'} inActiveStrokeOpacity={0.2} activeStrokeColor={Ratio>60?'#2ecc71':'#ff0000'}></CircularProgress>
             </View>
             
             <View style={styles.cardRatio}>
@@ -38,7 +38,8 @@ const styles=StyleSheet.create({
     },
     cardHeading:{
         marginHorizontal:18,
-        marginVertical:20
+        marginVertical:20,
+        width:200
     },
     cardRatio:{
         opacity:0.4,
