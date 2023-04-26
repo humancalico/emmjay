@@ -1,23 +1,14 @@
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import React, { useState } from "react";
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Modal } from "react-native";
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Modal, Pressable } from "react-native";
 
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import SemesterScreen from "./SemesterScreen";
 import { FlatList } from "react-native";
+import { AppContext } from "../AppContext";
 
 const Tab = createMaterialBottomTabNavigator();
 
-const semData = [
-  { id: "1", heading: "1st Semester" },
-  { id: "2", heading: "2st Semester" },
-  { id: "3", heading: "3st Semester" },
-  { id: "4", heading: "4st Semester" },
-  { id: "5", heading: "5st Semester" },
-  { id: "6", heading: "6st Semester" },
-  { id: "7", heading: "7st Semester" },
-  { id: "8", heading: "8st Semester" },
-];
 
 // const renderItem = ({ item }) => {
 //   <SemesterScreen Heading={item.heading} />;
@@ -35,6 +26,12 @@ const semData = [
 
 export default function HomeScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
+  const {studentDetail, setStudentDetail}=React.useContext(AppContext);
+
+  const handleSignOut = () =>{
+    setStudentDetail(null);
+    navigation.navigate('Login');
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#ffff" }}>
@@ -53,12 +50,9 @@ export default function HomeScreen({ navigation }) {
               <View
                 style={{ flex: 1, backgroundColor: "#fff",marginLeft:5,marginRight:9,marginTop:10 }}
               >
-                <Text style={{alignSelf:'center'}}>Select Semester</Text>
-                <FlatList
-                  data={semData}
-                  renderItem={({ item }) => <SemesterScreen Heading={item.heading} />}
-                  keyExtractor={(item) => item.id}
-                />
+                <Pressable style={{alignItems:"center", justifyContent:'center', paddingVertical:15, paddingHorizontal:32, borderRadius: 4, elevation:3, backgroundColor:'black', marginBottom:12}} onPress={handleSignOut}>
+                  <Text style={{fontSize:16, lineHeight:21, fontWeight:'bold', letterSpacing:0.25, color:'white'}}>Sign out</Text>
+                </Pressable>
                 <TouchableOpacity
                   onPress={() => {
                     setModalVisible(!modalVisible);

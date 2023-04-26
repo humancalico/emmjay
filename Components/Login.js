@@ -29,23 +29,40 @@ const Login = ({ navigation }) => {
     const data = await response.json();
     console.log(data);
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      // throw new Error('Network response was not ok');
+      alert('Invalid information, please try again.');
     }
 
     setStudentDetail(data);
     return response.json();
   })
 
-  const handleSubmit = (loginFormData) => {
+  const handleSubmit = async (loginFormData) => {
     const loginRequest = {
       otppwd: "PWD",
       username: loginFormData.enrollmentNumber,
       passwordotpvalue: loginFormData.password,
       Modulename: "STUDENTMODULE",
     }
-    mutation.mutate(loginRequest);
-    // TODO: navigate only on success
+    // try {
+    //   await mutation.mutateAsync(loginRequest);
+    //   // Only navigate to home if mutation is successful
+    //   navigation.navigate('Home');
+    // } catch (error) {
+    //   console.log(error);
+    //   // Throw error if mutation is not successful
+    //   throw new Error('Authorization failed');
+    // }
+    mutation.mutate(loginRequest)
     navigation.navigate('Home');
+    // .then(()=>{
+    //   navigation.navigate('Home');
+    // })
+    // .catch(()=>{
+    //   alert('Invalid information, please try again.');
+    // });
+    // TODO: navigate only on success
+    
   }
 
   return (
