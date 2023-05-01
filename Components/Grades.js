@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { Table, Row, Rows } from "react-native-table-component";
 import { ScrollView } from "react-native";
@@ -22,9 +22,9 @@ const fetchSemesterGradeDetails = async (gradeDetailRequest, bearerToken) => {
 };
 
 
-const GradeDropdown=({setRegistrationId})=>{
-  const {studentDetail} = React.useContext(AppContext);
-  const queryClient=useQueryClient();
+const GradeDropdown = ({ setRegistrationId }) => {
+  const { studentDetail } = React.useContext(AppContext);
+  const queryClient = useQueryClient();
 
   const studentRegistrationInfoForGradeRequest = {
     "clientid": "JAYPEE",
@@ -65,15 +65,12 @@ const GradeDropdown=({setRegistrationId})=>{
   )
 };
 
-
-
 export default function Grades() {
   const { studentDetail } = React.useContext(AppContext);
-  const [registrationId, setRegistrationId] = useState("NDRUM22110000001");
-  // console.log(studentDetail);
+  const [registrationId, setRegistrationId] = useState("NDRUM22050000001");
 
-  const bearerToken=studentDetail.response.regdata.token;
-  const gradeDetailQueryKey=['gradeDetail', registrationId];
+  const bearerToken = studentDetail.response.regdata.token;
+  const gradeDetailQueryKey = ['gradeDetail', registrationId];
 
   const gradeDetailRequest = {
     instituteid: studentDetail?.response?.regdata?.institutelist[0].value,
@@ -93,16 +90,19 @@ export default function Grades() {
     "Course Credit",
     "Grade Points",
   ]);
-  const tData = data?.response?.gradecard.map((grade, index) => [
-    `${index + 1}`,
-    grade.subjectcode,
-    grade.subjectdesc,
-    grade.grade,
-    grade.earnedcredit,
-    grade.gradepoint,
-  ]);
-  console.log("This is Grade Card Data",tData);
-  const [tableData, setTableData] = useState(tData);
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    const tData = data?.response?.gradecard.map((grade, index) => [
+      `${index + 1}`,
+      grade.subjectcode,
+      grade.subjectdesc,
+      grade.grade,
+      grade.earnedcredit,
+      grade.gradepoint,
+    ]);
+    setTableData(tData);
+  }, [data]);
 
   return (
     <ScrollView>
