@@ -70,6 +70,17 @@ const renderItem = ({ item }) => (
   <Card Heading={item.heading} Ratio={item.percentage} Status={item.status} />
 );
 
+function classesNeededOrCanSkip(classesAttended, totalClasses, minAttendance) {
+  const attendancePercentage = (classesAttended / totalClasses) * 100;
+  if (attendancePercentage <= minAttendance) {
+    const classesNeeded = Math.ceil(((minAttendance * totalClasses / 100) - classesAttended) / (1 - (minAttendance / 100)));
+    return (classesNeeded)
+  } else {
+    const classesCanSkip = Math.floor((100 * classesAttended) / minAttendance - totalClasses);
+    return (-classesCanSkip)
+  }
+}
+
 const AttendanceListComponent = () => {
   const { studentDetail } = React.useContext(AppContext);
   const [registrationId, setRegistrationId] = useState("NDRUM22110000001");
@@ -89,13 +100,20 @@ const AttendanceListComponent = () => {
   const { data } = useQuery(attendanceDetailQueryKey, () => fetchAttendanceDetail(attendanceDetailRequest, bearerToken), {
     enabled: !!registrationId, // Enable the query only when a registration ID is selected
   });
-  const cardsData = data?.response?.studentattendancelist?.map((item, index) => ({
-    id: `${index + 1}`,
-    heading: item.subjectcode,
-    percentage: item.Lpercentage,
-    ratio: `${item.Ltotalpres}/${item.Ltotalclass}`,
-    status: 'Attend all the classes it is very necessary otherwise you will fail'
-  })) ?? [];
+  const cardsData = data?.response?.studentattendancelist?.map((item, index) => {
+    const classesAttended = parseInt(item.Ltotalpres);
+    const totalClasses = parseInt(item.Ltotalclass);
+    const minAttendance = 60;
+    const classesDiff = classesNeededOrCanSkip(classesAttended, totalClasses, minAttendance);
+
+    return {
+      id: `${index + 1}`,
+      heading: item.subjectcode,
+      percentage: item.Lpercentage,
+      ratio: `${item.Ltotalpres}/${item.Ltotalclass}`,
+      status: classesDiff >= 0 ? `Attend next ${classesDiff} classes to get back on track` : `On track, you can skip next ${-classesDiff} classes`,
+    };
+  }) ?? [];
   console.log(cardsData);
 
   return (
