@@ -120,5 +120,5 @@ export default function Grades() {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: "#fff" },
   head: { height: 100, backgroundColor: "#f1f8ff" },
-  text: { margin: 6 },
+  text: { margin: 6, fontSize:14, fontWeight:"bold" },
 });

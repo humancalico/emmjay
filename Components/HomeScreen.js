@@ -1,7 +1,6 @@
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-import React, { useState } from "react";
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Modal, Pressable } from "react-native";
-
+import React, { useEffect, useState } from "react";
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Modal, Pressable, Animated} from "react-native";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import SemesterScreen from "./SemesterScreen";
 import { FlatList } from "react-native";
@@ -29,9 +28,21 @@ export default function HomeScreen({ navigation }) {
   const {studentDetail, setStudentDetail}=React.useContext(AppContext);
 
   const handleSignOut = () =>{
-    setStudentDetail(null);
+    setStudentDetail({});
     navigation.navigate('Login');
   }
+
+  const now = new Date();
+  let greeting = "";
+  if (now.getHours() >= 5 && now.getHours() < 12) {
+    greeting = "Good morning";
+  } else if (now.getHours() >= 12 && now.getHours() < 18) {
+    greeting = "Good afternoon";
+  } else {
+    greeting = "Good evening";
+  }
+
+  const studentName = studentDetail?.response?.regdata?.name;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#ffff" }}>
@@ -80,7 +91,7 @@ export default function HomeScreen({ navigation }) {
         </View>
       </ScrollView>
       <View style={{ flex: 1, alignItems: "center" }}>
-        <Text>What else to add???</Text>
+        <Text>{greeting}, {studentName}</Text>
       </View>
     </SafeAreaView>
   );
